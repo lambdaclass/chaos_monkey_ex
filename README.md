@@ -1,6 +1,12 @@
 # ChaosMonkeyEx
 
-**TODO: Add description**
+Test the robustnes of your elixir applications by randomly killing processes!
+
+## Usage
+
+```elixir
+ChaosMonkeyEx.Application.start(nil, allow_list: [:my_application_1, :my_application_2])
+```
 
 ## Installation
 

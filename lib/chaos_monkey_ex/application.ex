@@ -9,7 +9,7 @@ defmodule ChaosMonkeyEx.Application do
   def start(_type, _args) do
     children = [
       # Starts a worker by calling: ChaosMonkeyEx.Worker.start_link(arg)
-      # {ChaosMonkeyEx.Worker, arg}
+      {ChaosMonkeyEx.Worker, %{}}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

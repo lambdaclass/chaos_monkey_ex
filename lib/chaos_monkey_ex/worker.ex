@@ -5,6 +5,8 @@ defmodule ChaosMonkeyEx.Worker do
 
   defstruct allow_list: [], wait_average_msecs: 5000, wait_std_msecs: 0.3
 
+  alias ChaosMonkeyEx.ProcessInfo
+
   alias Statistics.Distributions.Normal
 
   # ----------------------------------------------------------------------------
@@ -46,7 +48,7 @@ defmodule ChaosMonkeyEx.Worker do
   end
 
   defp kill(options) do
-    case processes(options) |> Enum.shuffle() do
+    case ProcessInfo.list(options) |> Enum.shuffle() do
       [] ->
         Logger.debug("No allowlisted processes to kill.")
 
@@ -58,29 +60,5 @@ defmodule ChaosMonkeyEx.Worker do
   defp kill(target, _options) do
     Logger.warn("Killing #{inspect(target)}")
     Process.exit(target.pid, :kill)
-  end
-
-  defp processes(options) do
-    Process.list()
-    |> Enum.map(&process_info/1)
-    |> Enum.filter(fn process -> allow_listed?(process, options.allow_list) end)
-  end
-
-  defp process_info(pid) do
-    application =
-      case :application.get_application(pid) do
-        {:ok, application} -> application
-        :undefined -> :undefined
-      end
-
-    info = Process.info(pid)
-    registered_name = info[:registered_name]
-
-    %{pid: pid, application: application, registered_name: registered_name}
-  end
-
-  defp allow_listed?(process, allow_list) do
-    {process.application, allow_list} |> IO.inspect(label: "app, allow_list")
-    Enum.member?(allow_list, process.application)
   end
 end
